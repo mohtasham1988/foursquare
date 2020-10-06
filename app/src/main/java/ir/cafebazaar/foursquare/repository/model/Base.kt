@@ -1,6 +1,6 @@
 package ir.cafebazaar.foursquare.repository.model
 
- data class base(
+ data class Base(
     val meta: Meta,
     val response: Response
 )
