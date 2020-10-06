@@ -13,7 +13,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         findViewById<View>(R.id.container).apply {
-            supportFragmentManager.beginTransaction().replace(this.id,
+            supportFragmentManager.beginTransaction().replace(
+                this.id,
                 MainFragment()
             )
                 .commit()
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0)
+        if (supportFragmentManager.backStackEntryCount == 0)
             super.onBackPressed()
         else
             supportFragmentManager.popBackStack()

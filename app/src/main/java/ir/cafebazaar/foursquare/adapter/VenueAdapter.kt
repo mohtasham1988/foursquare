@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ir.cafebazaar.foursquare.databinding.RowVenueBinding
+import ir.cafebazaar.foursquare.interfaces.iVenueListener
 import ir.cafebazaar.foursquare.repository.model.Item
 
-class VenueAdapter :
+class VenueAdapter(var delegate: iVenueListener) :
     RecyclerView.Adapter<VenueAdapter.ViewHolder>() {
-     var mList = ArrayList<Item>()
+    var mList = ArrayList<Item>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -24,9 +25,16 @@ class VenueAdapter :
     }
 
     override fun getItemCount(): Int {
-        return mList.size
+        return 10
     }
 
     inner class ViewHolder(itemView: RowVenueBinding) :
-        RecyclerView.ViewHolder(itemView.root)
+        RecyclerView.ViewHolder(itemView.root) {
+        init {
+            itemView.root.setOnClickListener {
+                delegate.onClick()
+            }
+        }
+    }
+
 }

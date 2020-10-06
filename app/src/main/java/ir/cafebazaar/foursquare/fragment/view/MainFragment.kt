@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import ir.cafebazaar.foursquare.R
 import ir.cafebazaar.foursquare.adapter.VenueAdapter
 import ir.cafebazaar.foursquare.databinding.FragmentMainBinding
+import ir.cafebazaar.foursquare.interfaces.iVenueListener
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), iVenueListener {
     private lateinit var binding: FragmentMainBinding
 
     override fun onCreateView(
@@ -28,6 +30,14 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerView.layoutManager =
             LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        binding.recyclerView.adapter = VenueAdapter()
+        binding.recyclerView.adapter = VenueAdapter(this)
+    }
+
+    override fun onClick() {
+        fragmentManager?.beginTransaction()?.replace(
+            R.id.container,
+            DetailsFragment()
+        )
+            ?.addToBackStack("detailsFragment")?.commit()
     }
 }
