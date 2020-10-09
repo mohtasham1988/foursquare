@@ -24,9 +24,7 @@ class VenueAdapter(var delegate: iVenueListener) :
     ) {
     }
 
-    override fun getItemCount(): Int {
-        return 10
-    }
+    override fun getItemCount(): Int = mList.size
 
     inner class ViewHolder(itemView: RowVenueBinding) :
         RecyclerView.ViewHolder(itemView.root) {

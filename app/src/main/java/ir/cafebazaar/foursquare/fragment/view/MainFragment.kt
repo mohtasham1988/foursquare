@@ -12,11 +12,19 @@ import ir.cafebazaar.foursquare.adapter.VenueAdapter
 import ir.cafebazaar.foursquare.databinding.FragmentMainBinding
 import ir.cafebazaar.foursquare.fragment.viewmodel.MainFragmentViewModel
 import ir.cafebazaar.foursquare.interfaces.iVenueListener
+import ir.cafebazaar.foursquare.repository.model.Item
+import kotlinx.coroutines.*
 
 class MainFragment : Fragment(), iVenueListener {
     private lateinit var binding: FragmentMainBinding
+    lateinit var venueAdapter: VenueAdapter
+    val scope = CoroutineScope(Job() + Dispatchers.Main)
+
     private val viewModel =
-        ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(MainFragmentViewModel::class.java)
+        ViewModelProvider(
+            this,
+            ViewModelProvider.NewInstanceFactory()
+        ).get(MainFragmentViewModel::class.java)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +42,13 @@ class MainFragment : Fragment(), iVenueListener {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerView.layoutManager =
             LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        binding.recyclerView.adapter = VenueAdapter(this)
+        venueAdapter = VenueAdapter(this)
+        binding.recyclerView.adapter = venueAdapter
+        viewModel.getVenueList(this)
+        showLoading(true)
+        scope.launch {
+            viewModel.readVenueList()
+        }
     }
 
     override fun onClick() {
@@ -43,5 +57,16 @@ class MainFragment : Fragment(), iVenueListener {
             DetailsFragment()
         )
             ?.addToBackStack("detailsFragment")?.commit()
+    }
+
+    fun refresh(it: List<Item>) {
+
+        val size = venueAdapter.mList.size
+        venueAdapter.mList.addAll(it)
+        venueAdapter.notifyItemRangeInserted(size, venueAdapter.mList.size)
+    }
+
+    fun showLoading(isShow: Boolean) {
+        TODO("Not yet implemented")
     }
 }
