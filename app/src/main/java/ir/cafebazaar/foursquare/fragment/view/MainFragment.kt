@@ -67,6 +67,6 @@ class MainFragment : Fragment(), iVenueListener {
     }
 
     fun showLoading(isShow: Boolean) {
-        TODO("Not yet implemented")
+        binding.progressBar.visibility = (if (isShow) View.VISIBLE else View.GONE)
     }
 }
