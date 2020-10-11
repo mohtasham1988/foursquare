@@ -8,7 +8,7 @@ class ViewModelFactory() : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainFragmentViewModel::class.java)) {
-            return MainFragmentViewModel(VenueRepository()) as T
+            return MainFragmentViewModel() as T
         }
         throw IllegalArgumentException("Unknown class name")
     }

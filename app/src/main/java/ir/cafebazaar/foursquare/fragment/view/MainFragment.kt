@@ -5,26 +5,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import ir.cafebazaar.foursquare.R
 import ir.cafebazaar.foursquare.adapter.VenueAdapter
 import ir.cafebazaar.foursquare.databinding.FragmentMainBinding
 import ir.cafebazaar.foursquare.fragment.viewmodel.MainFragmentViewModel
+import ir.cafebazaar.foursquare.fragment.viewmodel.ViewModelFactory
 import ir.cafebazaar.foursquare.interfaces.iVenueListener
 import ir.cafebazaar.foursquare.repository.model.Item
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+
 
 class MainFragment : Fragment(), iVenueListener {
+    private lateinit var mLayoutManager: LinearLayoutManager
     private lateinit var binding: FragmentMainBinding
     lateinit var venueAdapter: VenueAdapter
     val scope = CoroutineScope(Job() + Dispatchers.Main)
+    var loading = true
 
     private val viewModel =
-        ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        ).get(MainFragmentViewModel::class.java)
+        ViewModelFactory().create (MainFragmentViewModel::class.java)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,14 +44,39 @@ class MainFragment : Fragment(), iVenueListener {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recyclerView.layoutManager =
-            LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        mLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerView.layoutManager = mLayoutManager
+
         venueAdapter = VenueAdapter(this)
         binding.recyclerView.adapter = venueAdapter
         viewModel.getVenueList(this)
         showLoading(true)
+        fetchData()
+
+        var pastVisiblesItems: Int
+        var visibleItemCount: Int
+        var totalItemCount: Int
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) { //check for scroll down
+                    visibleItemCount = mLayoutManager.getChildCount()
+                    totalItemCount = mLayoutManager.getItemCount()
+                    pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition()
+                    if (loading) {
+                        if (visibleItemCount + pastVisiblesItems >= totalItemCount) {
+                            loading = false
+                            fetchData()
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    private fun fetchData() {
         scope.launch {
-            viewModel.readVenueList()
+            viewModel.fetchVenueList()
         }
     }
 

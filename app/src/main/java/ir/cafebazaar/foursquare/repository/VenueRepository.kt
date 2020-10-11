@@ -18,7 +18,7 @@ class VenueRepository() {
     val loadFromCash: Boolean = false
     var venueList: MutableLiveData<BaseResponse<Base>> = MutableLiveData()
 
-    suspend fun readVenueList(
+    suspend fun fetchVenueList(
         lientId: String,
         clientSecret: String,
         v: String,

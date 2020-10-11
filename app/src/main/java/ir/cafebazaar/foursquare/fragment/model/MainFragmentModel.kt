@@ -1,16 +1,16 @@
 package ir.cafebazaar.foursquare.fragment.model
 
+import ir.cafebazaar.foursquare.FoursquareApp
 import ir.cafebazaar.foursquare.repository.VenueRepository
 import ir.cafebazaar.foursquare.utils.Constant
 
 class MainFragmentModel {
-    var offset = 1
-    var mainRepository = VenueRepository()
+    private var mainRepository = VenueRepository()
 
     fun getVenueList() = mainRepository.venueList
 
-    suspend fun readVenueList() {
-        mainRepository.readVenueList(
+    suspend fun fetchVenueList(offset:Int) {
+        mainRepository.fetchVenueList(
             Constant.clientId,
             Constant.clientSecret,
             "20190425",
@@ -20,4 +20,13 @@ class MainFragmentModel {
             offset
         )
     }
+
+    fun getOffset(): Int =
+        FoursquareApp.mInstance.getSharedPreferences().getInt("offset", 0)
+
+    fun addOffset() {
+        FoursquareApp.mInstance.getSharedPreferences().edit().putInt("offset", getOffset() + 1)
+            .apply()
+    }
+
 }
