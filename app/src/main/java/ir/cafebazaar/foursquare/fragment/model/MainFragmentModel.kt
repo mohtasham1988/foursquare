@@ -1,20 +1,21 @@
 package ir.cafebazaar.foursquare.fragment.model
 
+import androidx.lifecycle.LiveData
 import ir.cafebazaar.foursquare.FoursquareApp
 import ir.cafebazaar.foursquare.repository.VenueRepository
+import ir.cafebazaar.foursquare.repository.model.Venue
 import ir.cafebazaar.foursquare.utils.Constant
 
 class MainFragmentModel {
-    private var mainRepository = VenueRepository()
+    private var mainRepository = VenueRepository(this)
 
-    fun getVenueList() = mainRepository.venueList
 
-    suspend fun fetchVenueList(offset:Int) {
-        mainRepository.fetchVenueList(
+    suspend fun fetchVenueList(offset:Int,ll : String): LiveData<List<Venue>> {
+        return mainRepository.fetchVenueList(
             Constant.clientId,
             Constant.clientSecret,
             "20190425",
-            "1.283644,103.860753",
+            ll,
             "steak",
             10,
             offset

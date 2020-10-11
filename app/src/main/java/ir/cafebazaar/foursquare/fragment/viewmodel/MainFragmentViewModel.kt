@@ -1,27 +1,30 @@
 package ir.cafebazaar.foursquare.fragment.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import ir.cafebazaar.foursquare.fragment.model.MainFragmentModel
 import ir.cafebazaar.foursquare.fragment.view.MainFragment
-import ir.cafebazaar.foursquare.utils.Constant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class MainFragmentViewModel() : ViewModel() {
     var mainFragmentModel = MainFragmentModel()
 
-    fun getVenueList(fragment: MainFragment) {
-        mainFragmentModel.getVenueList().observe(fragment, Observer {
-            if (it.status == Constant.Status.SUCCESS && it.data?.response?.groups?.size!! > 0) {
-                fragment.refresh(it.data.response.groups[1].items)
-                mainFragmentModel.addOffset()
-            } else
-                fragment.showLoading(false)
-        })
-    }
 
-    suspend fun fetchVenueList() = withContext(Dispatchers.IO) {
-        mainFragmentModel.fetchVenueList(mainFragmentModel.getOffset())
+    suspend fun fetchVenueList(fragment: MainFragment, ll: String) = withContext(Dispatchers.Main) {
+        Log.d("vhdmht", "fetchVenueList: ")
+        mainFragmentModel.fetchVenueList(mainFragmentModel.getOffset(), ll).observe(fragment,
+            Observer {
+                if (it != null && it.size > 0) {
+                    fragment.refresh(it)
+                    fragment.loading = it.size == 10  // if array less than 10 we reach to end list
+                    mainFragmentModel.addOffset()
+                    Log.d("vhdmht", "getVenueList: ")
+                } else {
+                    fragment.showLoading(false)
+                    Log.d("vhdmht", "getVenueList: err ")
+                }
+            })
     }
 }

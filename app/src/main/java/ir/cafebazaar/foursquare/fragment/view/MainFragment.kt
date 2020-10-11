@@ -13,7 +13,7 @@ import ir.cafebazaar.foursquare.databinding.FragmentMainBinding
 import ir.cafebazaar.foursquare.fragment.viewmodel.MainFragmentViewModel
 import ir.cafebazaar.foursquare.fragment.viewmodel.ViewModelFactory
 import ir.cafebazaar.foursquare.interfaces.iVenueListener
-import ir.cafebazaar.foursquare.repository.model.Item
+import ir.cafebazaar.foursquare.repository.model.Venue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,7 +28,7 @@ class MainFragment : Fragment(), iVenueListener {
     var loading = true
 
     private val viewModel =
-        ViewModelFactory().create (MainFragmentViewModel::class.java)
+        ViewModelFactory().create(MainFragmentViewModel::class.java)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +49,7 @@ class MainFragment : Fragment(), iVenueListener {
 
         venueAdapter = VenueAdapter(this)
         binding.recyclerView.adapter = venueAdapter
-        viewModel.getVenueList(this)
+        fetchData()
         showLoading(true)
         fetchData()
 
@@ -76,7 +76,7 @@ class MainFragment : Fragment(), iVenueListener {
 
     private fun fetchData() {
         scope.launch {
-            viewModel.fetchVenueList()
+            viewModel.fetchVenueList(this@MainFragment,"1.283644,103.860753")
         }
     }
 
@@ -88,7 +88,7 @@ class MainFragment : Fragment(), iVenueListener {
             ?.addToBackStack("detailsFragment")?.commit()
     }
 
-    fun refresh(it: List<Item>) {
+    fun refresh(it: List<Venue>) {
 
         val size = venueAdapter.mList.size
         venueAdapter.mList.addAll(it)

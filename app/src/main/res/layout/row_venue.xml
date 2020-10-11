@@ -20,41 +20,42 @@
                 android:layout_height="0dp"
                 android:layout_margin="4dp"
                 android:background="#2c2c"
-                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Vancover, Kanada"
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="10dp"
+                android:text="Vancover, Kanada"
                 app:layout_constraintLeft_toRightOf="@+id/image"
-                 app:layout_constraintTop_toTopOf="parent"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-
+                android:id="@+id/categories"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Recommended Place"
+                android:layout_marginStart="8dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="4dp"
+                android:text="Recommended Place"
                 android:textSize="11sp"
-                app:layout_constraintLeft_toRightOf="@+id/image"
                 app:layout_constraintLeft_toLeftOf="@+id/title"
-                app:layout_constraintTop_toBottomOf="@+id/title"
-                android:layout_marginStart="8dp" />
+                app:layout_constraintLeft_toRightOf="@+id/image"
+                app:layout_constraintTop_toBottomOf="@+id/title" />
+
             <TextView
+                android:id="@+id/dist"
                 android:layout_width="wrap_content"
-                app:layout_constraintRight_toRightOf="parent"
-                android:text="Distance : 1000"
+                android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
                 android:layout_marginBottom="4dp"
+                android:text="Distance : 1000"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_height="wrap_content"/>
+                app:layout_constraintRight_toRightOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </layout>

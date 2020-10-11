@@ -1,10 +1,10 @@
 package ir.cafebazaar.foursquare.repository.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Venue(
-    val categories: List<Category>,
-    val id: String,
-    val location: Location,
-    val name: String,
-    val photos: Photos,
-    val venuePage: VenuePage
+    @PrimaryKey val id: String,
+    val name: String?,
 )
