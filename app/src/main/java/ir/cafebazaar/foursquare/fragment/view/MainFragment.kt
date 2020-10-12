@@ -51,7 +51,6 @@ class MainFragment : Fragment(), iVenueListener {
 
         venueAdapter = VenueAdapter(this)
         binding.recyclerView.adapter = venueAdapter
-        showLoading(true)
         fetchData()
 
         var pastVisiblesItems: Int
@@ -66,7 +65,6 @@ class MainFragment : Fragment(), iVenueListener {
                     pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition()
                     if (loading) {
                         if (visibleItemCount + pastVisiblesItems >= totalItemCount) {
-                            Log.d("vhdmht", "onScrolled end: ")
                             loading = false
                             fetchData()
                         }
@@ -77,6 +75,7 @@ class MainFragment : Fragment(), iVenueListener {
     }
 
     private fun fetchData() {
+        showLoading(true)
         scope.launch {
             viewModel.fetchVenueList(this@MainFragment,"36.294281, 59.602459")
         }

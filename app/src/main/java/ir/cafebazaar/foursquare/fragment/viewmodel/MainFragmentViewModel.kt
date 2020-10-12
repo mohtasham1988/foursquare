@@ -14,17 +14,13 @@ class MainFragmentViewModel() : ViewModel() {
 
 
     suspend fun fetchVenueList(fragment: MainFragment, ll: String) = withContext(Dispatchers.Main) {
-        Log.d("vhdmht", "fetchVenueList: getOffset() " + mainFragmentModel.getLastOffset())
         mainFragmentModel.fetchVenueList(ll).observe(fragment,
-            Observer {
-                if (it != null && it.status == Constant.Status.SUCCESS) {
-                    fragment.refresh(it.data!!)
+            {
+                if (it != null && it.status == Constant.Status.SUCCESS && it.data!!.isNotEmpty()) {
+                    fragment.refresh(it.data)
                     mainFragmentModel.offset += 10
                     fragment.loading =
                         it.data.size == 10  // if array less than 10 we reach to end list
-                    Log.d("vhdmht", "getVenueList: " + it.data.size)
-                } else {
-                    Log.d("vhdmht", "getVenueList: err ")
                 }
                 fragment.showLoading(false)
             })

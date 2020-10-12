@@ -6,6 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import ir.cafebazaar.foursquare.repository.api.respons.BaseResponse
 import ir.cafebazaar.foursquare.utils.Constant
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 abstract class NetworkBoundResource<ResultType, RequestType> {
@@ -32,10 +36,14 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
             result.removeSource(db)
             when (it.status) {
                 Constant.Status.SUCCESS -> {
-                    setLastOffset()
-                    saveCallResult(it.data!!)
-                    result.addSource(loadFromDb()) { new ->
-                        setValue(BaseResponse.success(new))
+                     GlobalScope.launch(Dispatchers.IO) {
+                        saveCallResult(it.data!!)
+                        withContext(Dispatchers.Main){
+                            setLastOffset()
+                            result.addSource(loadFromDb()) { new ->
+                                setValue(BaseResponse.success(new))
+                            }
+                        }
                     }
                 }
                 Constant.Status.ERROR -> {
@@ -59,7 +67,7 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
     protected open fun processResponse(response: BaseResponse<RequestType>) = response.data
 
     @WorkerThread
-    protected abstract fun saveCallResult(item: RequestType)
+    protected abstract suspend fun saveCallResult(item: RequestType)
 
     @MainThread
     protected abstract fun shouldFetch(data: ResultType?): Boolean

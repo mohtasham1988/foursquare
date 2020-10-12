@@ -17,11 +17,7 @@ import retrofit2.Response
 
 class VenueRepository(private val mainFragmentModel: MainFragmentModel) {
 
-
-
-    val scope = CoroutineScope(Job() + Dispatchers.Main)
-
-     suspend fun fetchVenueList(
+    fun fetchVenueList(
         clientId: String,
         clientSecret: String,
         v: String,
@@ -31,13 +27,8 @@ class VenueRepository(private val mainFragmentModel: MainFragmentModel) {
         offset: Int
     ): LiveData<BaseResponse<List<Venue>>> {
         return object : NetworkBoundResource<List<Venue>, List<Venue>>() {
-            override fun saveCallResult(item: List<Venue>) {
-                Log.d("vhdmht", "saveCallResult: ")
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        getVenueDao().insertAll(item)
-                    }
-                }
+            override suspend fun saveCallResult(item: List<Venue>) {
+                getVenueDao().insertAll(item)
             }
 
             override fun shouldFetch(data: List<Venue>?): Boolean {
@@ -45,12 +36,10 @@ class VenueRepository(private val mainFragmentModel: MainFragmentModel) {
             }
 
             override fun loadFromDb(): LiveData<List<Venue>> {
-                Log.d("vhdmht", "loadFromDb: offset" + offset)
                 return getVenueDao().getAll(limit, offset)
             }
 
             override fun createCall(): LiveData<BaseResponse<List<Venue>>> {
-                Log.d("vhdmht", "createCall: ")
                 return callApi(clientId, clientSecret, v, ll, query, limit, offset)
             }
 

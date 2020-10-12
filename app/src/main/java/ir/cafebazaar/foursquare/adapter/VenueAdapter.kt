@@ -7,6 +7,8 @@ import ir.cafebazaar.foursquare.databinding.RowVenueBinding
 import ir.cafebazaar.foursquare.interfaces.iVenueListener
 import ir.cafebazaar.foursquare.repository.model.Venue
 import kotlinx.android.synthetic.main.row_venue.view.*
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class VenueAdapter(var delegate: iVenueListener) :
     RecyclerView.Adapter<VenueAdapter.ViewHolder>() {
@@ -23,10 +25,14 @@ class VenueAdapter(var delegate: iVenueListener) :
         holder: ViewHolder,
         position: Int
     ) {
-        val item=mList[position]
+        val item = mList[position]
         holder.itemView.title.text = item.name
-        holder.itemView.categories.text= item.categories[0].name
-        holder.itemView.dist.text= item.location?.distance.toString()
+        holder.itemView.categories.text = item.categories[0].name
+        val df = DecimalFormat("###,###,###")
+        df.roundingMode = RoundingMode.CEILING
+        df.format(item.location?.distance).let {
+            holder.itemView.dist.text = "distance = $it"
+        }
     }
 
     override fun getItemCount(): Int = mList.size

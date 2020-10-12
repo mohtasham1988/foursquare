@@ -9,10 +9,10 @@ import ir.cafebazaar.foursquare.utils.Constant
 
 class MainFragmentModel {
     private var mainRepository = VenueRepository(this)
-    var offset: Int = 10
+    var offset: Int = 0
 
 
-    suspend fun fetchVenueList(ll : String): LiveData<BaseResponse<List<Venue>>> {
+     fun fetchVenueList(ll : String): LiveData<BaseResponse<List<Venue>>> {
         return mainRepository.fetchVenueList(
             Constant.clientId,
             Constant.clientSecret,
@@ -25,15 +25,15 @@ class MainFragmentModel {
     }
 
     fun getLastOffset(): Int =
-        FoursquareApp.mInstance.getSharedPreferences().getInt("offset", 10)
+        FoursquareApp.mInstance.getSharedPreferences().getInt("offset", 0)
 
-    fun setLastOffset(offset:Int) {
-        FoursquareApp.mInstance.getSharedPreferences().edit().putInt("offset",offset)
+    fun setLastOffset(offset: Int) {
+        FoursquareApp.mInstance.getSharedPreferences().edit().putInt("offset", offset)
             .apply()
     }
 
     fun resetOffset() {
-        FoursquareApp.mInstance.getSharedPreferences().edit().putInt("offset", 10)
+        FoursquareApp.mInstance.getSharedPreferences().edit().putInt("offset", 0)
             .apply()
     }
 }
