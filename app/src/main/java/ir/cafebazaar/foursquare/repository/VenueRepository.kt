@@ -1,5 +1,6 @@
 package ir.cafebazaar.foursquare.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ir.cafebazaar.foursquare.FoursquareApp
@@ -9,8 +10,7 @@ import ir.cafebazaar.foursquare.repository.api.respons.BaseResponse
 import ir.cafebazaar.foursquare.repository.db.DatabaseBuilder
 import ir.cafebazaar.foursquare.repository.model.Base
 import ir.cafebazaar.foursquare.repository.model.Venue
-import ir.cafebazaar.foursquare.utils.Constant
- import kotlinx.coroutines.*
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,29 +29,39 @@ class VenueRepository(private val mainFragmentModel: MainFragmentModel) {
         query: String,
         limit: Int,
         offset: Int
-    ): LiveData<List<Venue>> {
-       return object : NetworkBoundResource<List<Venue>, List<Venue>>() {
+    ): LiveData<BaseResponse<List<Venue>>> {
+        return object : NetworkBoundResource<List<Venue>, List<Venue>>() {
             override fun saveCallResult(item: List<Venue>) {
+                Log.d("vhdmht", "saveCallResult: ")
                 scope.launch {
-                    withContext(Dispatchers.IO){
+                    withContext(Dispatchers.IO) {
                         getVenueDao().insertAll(item)
                     }
                 }
             }
 
             override fun shouldFetch(data: List<Venue>?): Boolean {
-                return data == null || data.isEmpty() ||  offset >= mainFragmentModel.getOffset()
+                return data == null || data.isEmpty() || offset >= mainFragmentModel.getLastOffset()
             }
 
             override fun loadFromDb(): LiveData<List<Venue>> {
-                return getVenueDao().getAll()
+                Log.d("vhdmht", "loadFromDb: offset" + offset)
+                return getVenueDao().getAll(limit, offset)
             }
 
             override fun createCall(): LiveData<BaseResponse<List<Venue>>> {
-                return  callApi(clientId, clientSecret, v, ll, query, limit, offset)
+                Log.d("vhdmht", "createCall: ")
+                return callApi(clientId, clientSecret, v, ll, query, limit, offset)
             }
 
-       }.asLiveData()
+            override fun setLastOffset() {
+                mainFragmentModel.setLastOffset(offset)
+            }
+
+            override fun processResponse(response: BaseResponse<List<Venue>>): List<Venue>? {
+                return response.data
+            }
+        }.asLiveData()
 
 
     }
@@ -65,8 +75,8 @@ class VenueRepository(private val mainFragmentModel: MainFragmentModel) {
         query: String,
         limit: Int,
         offset: Int
-    ):LiveData<BaseResponse<List<Venue>>> {
-          val liveData = MutableLiveData<BaseResponse<List<Venue>>>()
+    ): LiveData<BaseResponse<List<Venue>>> {
+        val liveData = MutableLiveData<BaseResponse<List<Venue>>>()
 
         RetrofitBuilder.apiVenueService.getVenueExplore(
             clientId,
@@ -78,31 +88,24 @@ class VenueRepository(private val mainFragmentModel: MainFragmentModel) {
             offset
         ).enqueue(object : Callback<Base> {
             override fun onFailure(call: Call<Base>, t: Throwable) {
-                liveData.value = BaseResponse(
-                    Constant.Status.ERROR,
-                    null,
-                    t.message
-                )
+                liveData.value = BaseResponse.error(null, t.message)
             }
 
             override fun onResponse(call: Call<Base>, response: Response<Base>) {
-                liveData.value = BaseResponse(
-                    Constant.Status.SUCCESS,
-                    parsResponse(response),
-                    null
-                )
+                liveData.value = BaseResponse.success(parsResponse(response))
             }
         })
         return liveData
     }
 
-    fun parsResponse(response:  Response<Base>): ArrayList<Venue>{
-        val venueList=ArrayList<Venue>()
+    fun parsResponse(response: Response<Base>): ArrayList<Venue> {
+        val venueList = ArrayList<Venue>()
         if (response.isSuccessful)
             for (item in response.body()?.response!!.groups[0].items) {
                 venueList.add(item.venue)
             }
         return venueList
     }
+
     private fun getVenueDao() = DatabaseBuilder.getInstance(FoursquareApp.mInstance).venueDao()
 }

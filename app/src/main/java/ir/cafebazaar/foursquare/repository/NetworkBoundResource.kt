@@ -9,7 +9,7 @@ import ir.cafebazaar.foursquare.utils.Constant
 
 
 abstract class NetworkBoundResource<ResultType, RequestType> {
-    private val result = MediatorLiveData<ResultType>()
+    private val result = MediatorLiveData<BaseResponse<ResultType>>()
 
     init {
         @Suppress("LeakingThis")
@@ -19,7 +19,7 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
             if (shouldFetch(it))
                 fetchData(db)
             else result.addSource(db) { it2 ->
-                result.value = it2
+                setValue(BaseResponse.success(it2))
             }
 
         }
@@ -32,15 +32,16 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
             result.removeSource(db)
             when (it.status) {
                 Constant.Status.SUCCESS -> {
+                    setLastOffset()
                     saveCallResult(it.data!!)
                     result.addSource(loadFromDb()) { new ->
-                        setValue(new)
+                        setValue(BaseResponse.success(new))
                     }
                 }
                 Constant.Status.ERROR -> {
                     onFetchFailed()
-                    result.addSource(loadFromDb()) { new ->
-                        setValue(new)
+                    result.addSource(db) { new ->
+                        setValue(BaseResponse.error(new, "err"))
                     }
                 }
             }
@@ -48,11 +49,14 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
     }
 
     @MainThread
-    private fun setValue(newValue: ResultType) {
+    private fun setValue(newValue: BaseResponse<ResultType>) {
         if (result.value != newValue) {
             result.value = newValue
         }
     }
+
+    @WorkerThread
+    protected open fun processResponse(response: BaseResponse<RequestType>) = response.data
 
     @WorkerThread
     protected abstract fun saveCallResult(item: RequestType)
@@ -68,6 +72,7 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
 
     protected open fun onFetchFailed() {}
 
+    protected open fun setLastOffset() {}
 
-    fun asLiveData(): LiveData<ResultType> = result
+    fun asLiveData(): LiveData<BaseResponse<ResultType>> = result
 }

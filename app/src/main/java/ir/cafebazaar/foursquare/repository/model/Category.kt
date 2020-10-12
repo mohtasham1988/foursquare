@@ -1,10 +1,13 @@
 package ir.cafebazaar.foursquare.repository.model
 
+import androidx.room.Entity
+
+@Entity
 data class Category(
-    val icon: Icon,
-    val id: String,
-    val name: String,
-    val pluralName: String,
-    val primary: Boolean,
-    val shortName: String
+
+    val id: String?,
+    val name: String?,
+    val pluralName: String?,
+    val primary: Boolean?,
+    val shortName: String?
 )

@@ -1,6 +1,7 @@
 package ir.cafebazaar.foursquare.fragment.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,12 +45,12 @@ class MainFragment : Fragment(), iVenueListener {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.resetOffset()
         mLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         binding.recyclerView.layoutManager = mLayoutManager
 
         venueAdapter = VenueAdapter(this)
         binding.recyclerView.adapter = venueAdapter
-        fetchData()
         showLoading(true)
         fetchData()
 
@@ -65,6 +66,7 @@ class MainFragment : Fragment(), iVenueListener {
                     pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition()
                     if (loading) {
                         if (visibleItemCount + pastVisiblesItems >= totalItemCount) {
+                            Log.d("vhdmht", "onScrolled end: ")
                             loading = false
                             fetchData()
                         }
@@ -76,7 +78,7 @@ class MainFragment : Fragment(), iVenueListener {
 
     private fun fetchData() {
         scope.launch {
-            viewModel.fetchVenueList(this@MainFragment,"1.283644,103.860753")
+            viewModel.fetchVenueList(this@MainFragment,"36.294281, 59.602459")
         }
     }
 

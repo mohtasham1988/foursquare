@@ -25,8 +25,8 @@ class VenueAdapter(var delegate: iVenueListener) :
     ) {
         val item=mList[position]
         holder.itemView.title.text = item.name
-//        holder.itemView.categories.text= item.categories[0].name
-//        holder.itemView.categories.text= item.location.distance.toString()
+        holder.itemView.categories.text= item.categories[0].name
+        holder.itemView.dist.text= item.location?.distance.toString()
     }
 
     override fun getItemCount(): Int = mList.size
