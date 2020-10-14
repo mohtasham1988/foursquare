@@ -161,7 +161,8 @@ class LocationUpdatesService : Service() {
             } else {
                 startForeground(NOTIFICATION_ID, getNotification());
             }
-             */startForeground(NOTIFICATION_ID, notification())
+             */
+            //startForeground(NOTIFICATION_ID, notification())
         }
         return true // Ensures onRebind() is called when a client re-binds.
     }
