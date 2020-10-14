@@ -305,7 +305,7 @@ class LocationUpdatesService : Service() {
             interval = UPDATE_INTERVAL_IN_MILLISECONDS
             fastestInterval = FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-            maxWaitTime = 60 * 60 * 1000
+            //maxWaitTime = 60 * 60 * 1000
         }
     }
 

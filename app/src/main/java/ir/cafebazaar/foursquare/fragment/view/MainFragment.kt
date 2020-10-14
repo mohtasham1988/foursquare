@@ -120,19 +120,18 @@ class MainFragment : Fragment(), iVenueListener {
                 }
             }
         })
+        mInstance.fetchData()
         Handler().postDelayed(Runnable {
             mService?.requestLocationUpdates()
         }, 500)
     }
 
     private fun fetchData() {
-        if (viewModel.locationText.isNotEmpty()) {
+        if (viewModel.locationText!!.isNotEmpty()) {
             showLoading(true)
             scope.launch {
-                viewModel.fetchVenueList(this@MainFragment, viewModel.locationText)
+                viewModel.fetchVenueList(this@MainFragment, viewModel.locationText!!)
             }
-        } else {
-            Toast.makeText(activity, "location not found!", Toast.LENGTH_SHORT).show()
         }
     }
 
