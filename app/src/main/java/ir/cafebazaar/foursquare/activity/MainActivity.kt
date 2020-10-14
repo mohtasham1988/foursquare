@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 this.id,
                 MainFragment()
             )
-                .commit()
+                .commitAllowingStateLoss()
         }
     }
 

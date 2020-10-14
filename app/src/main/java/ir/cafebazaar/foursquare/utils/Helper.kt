@@ -28,8 +28,8 @@ class Helper {
                 .apply()
         }
 
-        fun getLocationText(location: Location?): String? {
-            return if (location == null) "Unknown location" else "(" + location.latitude + ", " + location.longitude + ")"
+        fun getLocationText(location: Location?): String {
+            return if (location == null) "" else "${location.latitude},${location.longitude}"
         }
 
     }
